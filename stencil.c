@@ -6,8 +6,8 @@
 // Define output file name
 #define OUTPUT_FILE "stencil.pgm"
 
-void stencil(const short nx, const short ny, double *  image, double *  tmp_image);
-void init_image(const short nx, const short ny, double *  image, double *  tmp_image);
+void stencil(const short nx, const short ny, double * restrict image, double * restrict  tmp_image);
+void init_image(const short nx, const short ny, double * restrict  image, double * restrict  tmp_image);
 void output_image(const char * file_name, const short nx, const short ny, double *image);
 double wtime(void);
 
@@ -25,8 +25,8 @@ int main(int argc, char *argv[]) {
   short niters = atoi(argv[3]);
 
   // Allocate the image
-  double *image = malloc(sizeof(double)*nx*ny);
-  double *tmp_image = malloc(sizeof(double)*nx*ny);
+  double * restrict image = malloc(sizeof(double)*nx*ny);
+  double * restrict tmp_image = malloc(sizeof(double)*nx*ny);
 
   // Set the input image
   init_image(nx, ny, image, tmp_image);
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
   free(image);
 }
 
-void stencil(const short nx, const short ny, double *  image, double *  tmp_image) {
+void stencil(const short nx, const short ny, double * restrict image, double * restrict tmp_image) {
   //when i=0
   //when j=0
   tmp_image[0] = image[0] * 0.6;
@@ -104,7 +104,7 @@ void stencil(const short nx, const short ny, double *  image, double *  tmp_imag
 }
 
 // Create the input image
-void init_image(const short nx, const short ny, double *  image, double *  tmp_image) {
+void init_image(const short nx, const short ny, double * restrict image, double * restrict tmp_image) {
   // Zero everything
   for (short j = 0; j < ny; ++j) {
     for (short i = 0; i < nx; ++i) {
