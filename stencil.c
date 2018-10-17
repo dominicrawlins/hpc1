@@ -61,7 +61,7 @@ void stencil(const short nx, const short ny, double *  image, double *  tmp_imag
       if (j < ny-1) tmp_image[j+i*ny] += image[j+1+i*ny] * 0.1;
     }
     tmp_image[j+(nx-1)*ny] = image[j+(nx-1)*ny] * 0.6;
-    mp_image[j+(nx-1)*ny] += image[j  +(nx-2)*ny] * 0.1;
+    tmp_image[j+(nx-1)*ny] += image[j  +(nx-2)*ny] * 0.1;
   }
 }
 
