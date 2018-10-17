@@ -70,20 +70,20 @@ void stencil(const short nx, const short ny, double * restrict image, double * r
   for (short i = 1; i < nx-1; ++i) {
     //when j=0
     tmp_image[i*nx] = image[i*nx] * 0.6;
-    if (i > 0)    tmp_image[i*nx] += image[(i-1)*nx] * 0.1;
-    if (i < ny-1) tmp_image[i*nx] += image[(i+1)*nx] * 0.1;
+    tmp_image[i*nx] += image[(i-1)*nx] * 0.1;
+    tmp_image[i*nx] += image[(i+1)*nx] * 0.1;
     tmp_image[i*nx] += image[1+i*nx] * 0.1;
     for (short j = 1; j < ny-1; ++j) {
       tmp_image[j+i*nx] = image[j+i*nx] * 0.6;
-      if (i > 0)    tmp_image[j+i*nx] += image[j  +(i-1)*nx] * 0.1;
-      if (i < ny-1) tmp_image[j+i*nx] += image[j  +(i+1)*nx] * 0.1;
+      tmp_image[j+i*nx] += image[j  +(i-1)*nx] * 0.1;
+      tmp_image[j+i*nx] += image[j  +(i+1)*nx] * 0.1;
       tmp_image[j+i*nx] += image[j-1+i*nx] * 0.1;
       tmp_image[j+i*nx] += image[j+1+i*nx] * 0.1;
     }
     //when j=ny-1
     tmp_image[(ny-1)+i*nx] = image[(ny-1)+i*nx] * 0.6;
-    if (i > 0)    tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i-1)*nx] * 0.1;
-    if (i < ny-1) tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i+1)*nx] * 0.1;
+    tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i-1)*nx] * 0.1;
+    tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i+1)*nx] * 0.1;
     tmp_image[(ny-1)+i*nx] += image[(ny-1)-1+i*nx] * 0.1;
   }
   //when i = nx-1
