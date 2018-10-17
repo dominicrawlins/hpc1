@@ -50,15 +50,57 @@ int main(int argc, char *argv[]) {
 }
 
 void stencil(const short nx, const short ny, double *  image, double *  tmp_image) {
-  for (short i = 0; i < ny; ++i) {
-    for (short j = 0; j < nx; ++j) {
-      tmp_image[j+i*ny] = image[j+i*ny] * 0.6;
-      if (i > 0)    tmp_image[j+i*ny] += image[j  +(i-1)*ny] * 0.1;
-      if (i < nx-1) tmp_image[j+i*ny] += image[j  +(i+1)*ny] * 0.1;
-      if (j > 0)    tmp_image[j+i*ny] += image[j-1+i*ny] * 0.1;
-      if (j < ny-1) tmp_image[j+i*ny] += image[j+1+i*ny] * 0.1;
-    }
+  //when i=0
+  //when j=0
+  tmp_image[0] = image[0] * 0.6;
+  tmp_image[0] += image[nx] * 0.1;
+  tmp_image[0] += image[0] * 0.1;
+  for (short j = 1; j < ny-1; ++j) {
+    tmp_image[j] = image[j] * 0.6;
+    tmp_image[j] += image[j  +nx] * 0.1;
+    tmp_image[j] += image[j-1] * 0.1;
+    tmp_image[j] += image[j+1] * 0.1;
   }
+  //when j=ny-1
+  tmp_image[ny-1] = image[ny-1] * 0.6;
+  tmp_image[ny-1] += image[(ny-1) +nx] * 0.1;
+  tmp_image[ny-1] += image[(ny-1)-1] * 0.1;
+
+
+  for (short i = 1; i < nx-1; ++i) {
+    //when j=0
+    tmp_image[i*nx] = image[i*nx] * 0.6;
+    if (i > 0)    tmp_image[i*nx] += image[(i-1)*nx] * 0.1;
+    if (i < ny-1) tmp_image[i*nx] += image[(i+1)*nx] * 0.1;
+    tmp_image[i*nx] += image[1+i*nx] * 0.1;
+    for (short j = 1; j < ny-1; ++j) {
+      tmp_image[j+i*nx] = image[j+i*nx] * 0.6;
+      if (i > 0)    tmp_image[j+i*nx] += image[j  +(i-1)*nx] * 0.1;
+      if (i < ny-1) tmp_image[j+i*nx] += image[j  +(i+1)*nx] * 0.1;
+      tmp_image[j+i*nx] += image[j-1+i*nx] * 0.1;
+      tmp_image[j+i*nx] += image[j+1+i*nx] * 0.1;
+    }
+    //when j=ny-1
+    tmp_image[(ny-1)+i*nx] = image[(ny-1)+i*nx] * 0.6;
+    if (i > 0)    tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i-1)*nx] * 0.1;
+    if (i < ny-1) tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i+1)*nx] * 0.1;
+    tmp_image[(ny-1)+i*nx] += image[(ny-1)-1+i*nx] * 0.1;
+  }
+  //when i = nx-1
+  //when j=0
+  tmp_image[(nx-1)*nx] = image[(nx-1)*nx] * 0.6;
+  tmp_image[(nx-1)*nx] += image[((nx-1)-1)*nx] * 0.1;
+  tmp_image[(nx-1)*nx] += image[1+(nx-1)*nx] * 0.1;
+  for (short j = 1; j < ny-1; ++j) {
+    tmp_image[j+(nx-1)*nx] = image[j+(nx-1)*nx] * 0.6;
+    tmp_image[j+(nx-1)*nx] += image[j  +((nx-1)-1)*nx] * 0.1;
+    tmp_image[j+(nx-1)*nx] += image[j-1+(nx-1)*nx] * 0.1;
+    tmp_image[j+(nx-1)*nx] += image[j+1+(nx-1)*nx] * 0.1;
+  }
+  //when j=ny-1
+  tmp_image[(ny-1)+(nx-1)*nx] = image[(ny-1)+(nx-1)*nx] * 0.6;
+  tmp_image[(ny-1)+(nx-1)*nx] += image[(ny-1)  +((nx-1)-1)*nx] * 0.1;
+  tmp_image[(ny-1)+(nx-1)*nx] += image[(ny-1)-1+(nx-1)*nx] * 0.1;
 }
 
 // Create the input image
