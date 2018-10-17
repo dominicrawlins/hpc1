@@ -6,9 +6,9 @@
 // Define output file name
 #define OUTPUT_FILE "stencil.pgm"
 
-void stencil(const int nx, const int ny, double *  image, double *  tmp_image);
-void init_image(const int nx, const int ny, double *  image, double *  tmp_image);
-void output_image(const char * file_name, const int nx, const int ny, double *image);
+void stencil(const short nx, const short ny, double *  image, double *  tmp_image);
+void init_image(const short nx, const short ny, double *  image, double *  tmp_image);
+void output_image(const char * file_name, const short nx, const short ny, double *image);
 double wtime(void);
 
 int main(int argc, char *argv[]) {
@@ -20,9 +20,9 @@ int main(int argc, char *argv[]) {
   }
 
   // Initiliase problem dimensions from command line arguments
-  int nx = atoi(argv[1]);
-  int ny = atoi(argv[2]);
-  int niters = atoi(argv[3]);
+  short nx = atoi(argv[1]);
+  short ny = atoi(argv[2]);
+  short niters = atoi(argv[3]);
 
   // Allocate the image
   double *image = malloc(sizeof(double)*nx*ny);
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 
   // Call the stencil kernel
   double tic = wtime();
-  for (int t = 0; t < niters; ++t) {
+  for (short t = 0; t < niters; ++t) {
     stencil(nx, ny, image, tmp_image);
     stencil(nx, ny, tmp_image, image);
   }
@@ -49,9 +49,9 @@ int main(int argc, char *argv[]) {
   free(image);
 }
 
-void stencil(const int nx, const int ny, double *  image, double *  tmp_image) {
-  for (int j = 0; j < ny; ++j) {
-    for (int i = 0; i < nx; ++i) {
+void stencil(const short nx, const short ny, double *  image, double *  tmp_image) {
+  for (short j = 0; j < ny; ++j) {
+    for (short i = 0; i < nx; ++i) {
       tmp_image[j+i*ny] = image[j+i*ny] * 3.0/5.0;
       if (i > 0)    tmp_image[j+i*ny] += image[j  +(i-1)*ny] * 0.5/5.0;
       if (i < nx-1) tmp_image[j+i*ny] += image[j  +(i+1)*ny] * 0.5/5.0;
@@ -62,10 +62,10 @@ void stencil(const int nx, const int ny, double *  image, double *  tmp_image) {
 }
 
 // Create the input image
-void init_image(const int nx, const int ny, double *  image, double *  tmp_image) {
+void init_image(const short nx, const short ny, double *  image, double *  tmp_image) {
   // Zero everything
-  for (int j = 0; j < ny; ++j) {
-    for (int i = 0; i < nx; ++i) {
+  for (short j = 0; j < ny; ++j) {
+    for (short i = 0; i < nx; ++i) {
       image[j+i*ny] = 0.0;
       tmp_image[j+i*ny] = 0.0;
     }
@@ -85,7 +85,7 @@ void init_image(const int nx, const int ny, double *  image, double *  tmp_image
 }
 
 // Routine to output the image in Netpbm grayscale binary image format
-void output_image(const char * file_name, const int nx, const int ny, double *image) {
+void output_image(const char * file_name, const short nx, const short ny, double *image) {
 
   // Open output file
   FILE *fp = fopen(file_name, "w");
@@ -101,16 +101,16 @@ void output_image(const char * file_name, const int nx, const int ny, double *im
   // This is used to rescale the values
   // to a range of 0-255 for output
   double maximum = 0.0;
-  for (int j = 0; j < ny; ++j) {
-    for (int i = 0; i < nx; ++i) {
+  for (short j = 0; j < ny; ++j) {
+    for (short i = 0; i < nx; ++i) {
       if (image[j+i*ny] > maximum)
         maximum = image[j+i*ny];
     }
   }
 
   // Output image, converting to numbers 0-255
-  for (int j = 0; j < ny; ++j) {
-    for (int i = 0; i < nx; ++i) {
+  for (short j = 0; j < ny; ++j) {
+    for (short i = 0; i < nx; ++i) {
       fputc((char)(255.0*image[j+i*ny]/maximum), fp);
     }
   }
