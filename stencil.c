@@ -6,9 +6,9 @@
 // Define output file name
 #define OUTPUT_FILE "stencil.pgm"
 
-void stencil(const short nx, const short ny, double * restrict image, double * restrict  tmp_image);
-void init_image(const short nx, const short ny, double * restrict  image, double * restrict  tmp_image);
-void output_image(const char * file_name, const short nx, const short ny, double *image);
+void stencil(const short nx, const short ny, float * restrict image, float * restrict  tmp_image);
+void init_image(const short nx, const short ny, float * restrict  image, float * restrict  tmp_image);
+void output_image(const char * file_name, const short nx, const short ny, float *image);
 double wtime(void);
 
 int main(int argc, char *argv[]) {
@@ -25,8 +25,8 @@ int main(int argc, char *argv[]) {
   short niters = atoi(argv[3]);
 
   // Allocate the image
-  double * restrict image = malloc(sizeof(double)*nx*ny);
-  double * restrict tmp_image = malloc(sizeof(double)*nx*ny);
+  float * restrict image = malloc(sizeof(double)*nx*ny);
+  float * restrict tmp_image = malloc(sizeof(double)*nx*ny);
 
   // Set the input image
   init_image(nx, ny, image, tmp_image);
@@ -49,67 +49,67 @@ int main(int argc, char *argv[]) {
   free(image);
 }
 
-void stencil(const short nx, const short ny, double * restrict image, double * restrict tmp_image) {
+void stencil(const short nx, const short ny, float * restrict image, float * restrict tmp_image) {
   //when i=0
   //when j=0
-  tmp_image[0] = image[0] * 0.6;
-  tmp_image[0] += image[nx] * 0.1;
-  tmp_image[0] += image[0] * 0.1;
+  tmp_image[0] = image[0] * 0.6f;
+  tmp_image[0] += image[nx] * 0.1f;
+  tmp_image[0] += image[0] * 0.1f;
   for (short j = 1; j < ny-1; ++j) {
-    tmp_image[j] = image[j] * 0.6;
-    tmp_image[j] += image[j  +nx] * 0.1;
-    tmp_image[j] += image[j-1] * 0.1;
-    tmp_image[j] += image[j+1] * 0.1;
+    tmp_image[j] = image[j] * 0.6f;
+    tmp_image[j] += image[j  +nx] * 0.1f;
+    tmp_image[j] += image[j-1] * 0.1f;
+    tmp_image[j] += image[j+1] * 0.1f;
   }
   //when j=ny-1
-  tmp_image[ny-1] = image[ny-1] * 0.6;
-  tmp_image[ny-1] += image[(ny-1) +nx] * 0.1;
-  tmp_image[ny-1] += image[(ny-1)-1] * 0.1;
+  tmp_image[ny-1] = image[ny-1] * 0.6f;
+  tmp_image[ny-1] += image[(ny-1) +nx] * 0.1f;
+  tmp_image[ny-1] += image[(ny-1)-1] * 0.1f;
 
 
   for (short i = 1; i < nx-1; ++i) {
     //when j=0
-    tmp_image[i*nx] = image[i*nx] * 0.6;
-    tmp_image[i*nx] += image[(i-1)*nx] * 0.1;
-    tmp_image[i*nx] += image[(i+1)*nx] * 0.1;
-    tmp_image[i*nx] += image[1+i*nx] * 0.1;
+    tmp_image[i*nx] = image[i*nx] * 0.6f;
+    tmp_image[i*nx] += image[(i-1)*nx] * 0.1f;
+    tmp_image[i*nx] += image[(i+1)*nx] * 0.1f;
+    tmp_image[i*nx] += image[1+i*nx] * 0.1f;
     for (short j = 1; j < ny-1; ++j) {
-      tmp_image[j+i*nx] = image[j+i*nx] * 0.6;
-      tmp_image[j+i*nx] += image[j  +(i-1)*nx] * 0.1;
-      tmp_image[j+i*nx] += image[j  +(i+1)*nx] * 0.1;
-      tmp_image[j+i*nx] += image[j-1+i*nx] * 0.1;
-      tmp_image[j+i*nx] += image[j+1+i*nx] * 0.1;
+      tmp_image[j+i*nx] = image[j+i*nx] * 0.6f;
+      tmp_image[j+i*nx] += image[j  +(i-1)*nx] * 0.1f;
+      tmp_image[j+i*nx] += image[j  +(i+1)*nx] * 0.1f;
+      tmp_image[j+i*nx] += image[j-1+i*nx] * 0.1f;
+      tmp_image[j+i*nx] += image[j+1+i*nx] * 0.1f;
     }
     //when j=ny-1
-    tmp_image[(ny-1)+i*nx] = image[(ny-1)+i*nx] * 0.6;
-    tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i-1)*nx] * 0.1;
-    tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i+1)*nx] * 0.1;
-    tmp_image[(ny-1)+i*nx] += image[(ny-1)-1+i*nx] * 0.1;
+    tmp_image[(ny-1)+i*nx] = image[(ny-1)+i*nx] * 0.6f;
+    tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i-1)*nx] * 0.1f;
+    tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i+1)*nx] * 0.1f;
+    tmp_image[(ny-1)+i*nx] += image[(ny-1)-1+i*nx] * 0.1f;
   }
   //when i = nx-1
   //when j=0
-  tmp_image[(nx-1)*nx] = image[(nx-1)*nx] * 0.6;
-  tmp_image[(nx-1)*nx] += image[((nx-1)-1)*nx] * 0.1;
-  tmp_image[(nx-1)*nx] += image[1+(nx-1)*nx] * 0.1;
+  tmp_image[(nx-1)*nx] = image[(nx-1)*nx] * 0.6f;
+  tmp_image[(nx-1)*nx] += image[((nx-1)-1)*nx] * 0.1f;
+  tmp_image[(nx-1)*nx] += image[1+(nx-1)*nx] * 0.1f;
   for (short j = 1; j < ny-1; ++j) {
-    tmp_image[j+(nx-1)*nx] = image[j+(nx-1)*nx] * 0.6;
-    tmp_image[j+(nx-1)*nx] += image[j  +((nx-1)-1)*nx] * 0.1;
-    tmp_image[j+(nx-1)*nx] += image[j-1+(nx-1)*nx] * 0.1;
-    tmp_image[j+(nx-1)*nx] += image[j+1+(nx-1)*nx] * 0.1;
+    tmp_image[j+(nx-1)*nx] = image[j+(nx-1)*nx] * 0.6f;
+    tmp_image[j+(nx-1)*nx] += image[j  +((nx-1)-1)*nx] * 0.1f;
+    tmp_image[j+(nx-1)*nx] += image[j-1+(nx-1)*nx] * 0.1f;
+    tmp_image[j+(nx-1)*nx] += image[j+1+(nx-1)*nx] * 0.1f;
   }
   //when j=ny-1
-  tmp_image[(ny-1)+(nx-1)*nx] = image[(ny-1)+(nx-1)*nx] * 0.6;
-  tmp_image[(ny-1)+(nx-1)*nx] += image[(ny-1)  +((nx-1)-1)*nx] * 0.1;
-  tmp_image[(ny-1)+(nx-1)*nx] += image[(ny-1)-1+(nx-1)*nx] * 0.1;
+  tmp_image[(ny-1)+(nx-1)*nx] = image[(ny-1)+(nx-1)*nx] * 0.6f;
+  tmp_image[(ny-1)+(nx-1)*nx] += image[(ny-1)  +((nx-1)-1)*nx] * 0.1f;
+  tmp_image[(ny-1)+(nx-1)*nx] += image[(ny-1)-1+(nx-1)*nx] * 0.1f;
 }
 
 // Create the input image
-void init_image(const short nx, const short ny, double * restrict image, double * restrict tmp_image) {
+void init_image(const short nx, const short ny, float * restrict image, float * restrict tmp_image) {
   // Zero everything
   for (short j = 0; j < ny; ++j) {
     for (short i = 0; i < nx; ++i) {
-      image[j+i*ny] = 0.0;
-      tmp_image[j+i*ny] = 0.0;
+      image[j+i*ny] = 0.0f;
+      tmp_image[j+i*ny] = 0.0f;
     }
   }
 
@@ -119,7 +119,7 @@ void init_image(const short nx, const short ny, double * restrict image, double 
       for (int jj = j*ny/8; jj < (j+1)*ny/8; ++jj) {
         for (int ii = i*nx/8; ii < (i+1)*nx/8; ++ii) {
           if ((i+j)%2)
-          image[jj+ii*ny] = 100.0;
+          image[jj+ii*ny] = 100.0f;
         }
       }
     }
@@ -127,7 +127,7 @@ void init_image(const short nx, const short ny, double * restrict image, double 
 }
 
 // Routine to output the image in Netpbm grayscale binary image format
-void output_image(const char * file_name, const short nx, const short ny, double *image) {
+void output_image(const char * file_name, const short nx, const short ny, float *image) {
 
   // Open output file
   FILE *fp = fopen(file_name, "w");
@@ -142,7 +142,7 @@ void output_image(const char * file_name, const short nx, const short ny, double
   // Calculate maximum value of image
   // This is used to rescale the values
   // to a range of 0-255 for output
-  double maximum = 0.0;
+  float maximum = 0.0f;
   for (short j = 0; j < ny; ++j) {
     for (short i = 0; i < nx; ++i) {
       if (image[j+i*ny] > maximum)
@@ -153,7 +153,7 @@ void output_image(const char * file_name, const short nx, const short ny, double
   // Output image, converting to numbers 0-255
   for (short j = 0; j < ny; ++j) {
     for (short i = 0; i < nx; ++i) {
-      fputc((char)(255.0*image[j+i*ny]/maximum), fp);
+      fputc((char)(255.0f*image[j+i*ny]/maximum), fp);
     }
   }
 
