@@ -6,9 +6,9 @@
 // Define output file name
 #define OUTPUT_FILE "stencil.pgm"
 
-void stencil(const short nx, const short ny, float * restrict image, float * restrict  tmp_image);
-void init_image(const short nx, const short ny, float * restrict  image, float * restrict  tmp_image);
-void output_image(const char * file_name, const short nx, const short ny, float *image);
+void stencil(const short size, float * restrict image, float * restrict  tmp_image);
+void init_image(const short size, float * restrict  image, float * restrict  tmp_image);
+void output_image(const char * file_name, const short size, float *image);
 double wtime(void);
 
 int main(int argc, char *argv[]) {
@@ -24,18 +24,25 @@ int main(int argc, char *argv[]) {
   short ny = atoi(argv[2]);
   short niters = atoi(argv[3]);
 
+  if(nx != ny){
+    fprintf(stderr, "nx and ny do not equal");
+    exit(EXIT_FAILURE);
+  }
+
+  short size = nx;
+
   // Allocate the image
-  float * restrict image = malloc(sizeof(double)*nx*ny);
-  float * restrict tmp_image = malloc(sizeof(double)*nx*ny);
+  float * restrict image = malloc(sizeof(double)*size*size);
+  float * restrict tmp_image = malloc(sizeof(double)*size*size);
 
   // Set the input image
-  init_image(nx, ny, image, tmp_image);
+  init_image(size, image, tmp_image);
 
   // Call the stencil kernel
   double tic = wtime();
   for (short t = 0; t < niters; ++t) {
-    stencil(nx, ny, image, tmp_image);
-    stencil(nx, ny, tmp_image, image);
+    stencil(size, image, tmp_image);
+    stencil(size, tmp_image, image);
   }
   double toc = wtime();
 
@@ -45,81 +52,81 @@ int main(int argc, char *argv[]) {
   printf(" runtime: %lf s\n", toc-tic);
   printf("------------------------------------\n");
 
-  output_image(OUTPUT_FILE, nx, ny, image);
+  output_image(OUTPUT_FILE, size, image);
   free(image);
 }
 
-void stencil(const short nx, const short ny, float * restrict image, float * restrict tmp_image) {
+void stencil(const short size, float * restrict image, float * restrict tmp_image) {
   //when i=0
   //when j=0
   tmp_image[0] = image[0] * 0.6f;
-  tmp_image[0] += image[nx] * 0.1f;
+  tmp_image[0] += image[size] * 0.1f;
   tmp_image[0] += image[0] * 0.1f;
-  for (short j = 1; j < ny-1; ++j) {
+  for (short j = 1; j < size-1; ++j) {
     tmp_image[j] = image[j] * 0.6f;
-    tmp_image[j] += image[j  +nx] * 0.1f;
+    tmp_image[j] += image[j  +size] * 0.1f;
     tmp_image[j] += image[j-1] * 0.1f;
     tmp_image[j] += image[j+1] * 0.1f;
   }
-  //when j=ny-1
-  tmp_image[ny-1] = image[ny-1] * 0.6f;
-  tmp_image[ny-1] += image[(ny-1) +nx] * 0.1f;
-  tmp_image[ny-1] += image[(ny-1)-1] * 0.1f;
+  //when j=size-1
+  tmp_image[size-1] = image[size-1] * 0.6f;
+  tmp_image[size-1] += image[(size-1) +size] * 0.1f;
+  tmp_image[size-1] += image[(size-1)-1] * 0.1f;
 
 
-  for (short i = 1; i < nx-1; ++i) {
+  for (short i = 1; i < size-1; ++i) {
     //when j=0
-    tmp_image[i*nx] = image[i*nx] * 0.6f;
-    tmp_image[i*nx] += image[(i-1)*nx] * 0.1f;
-    tmp_image[i*nx] += image[(i+1)*nx] * 0.1f;
-    tmp_image[i*nx] += image[1+i*nx] * 0.1f;
-    for (short j = 1; j < ny-1; ++j) {
-      tmp_image[j+i*nx] = image[j+i*nx] * 0.6f;
-      tmp_image[j+i*nx] += image[j  +(i-1)*nx] * 0.1f;
-      tmp_image[j+i*nx] += image[j  +(i+1)*nx] * 0.1f;
-      tmp_image[j+i*nx] += image[j-1+i*nx] * 0.1f;
-      tmp_image[j+i*nx] += image[j+1+i*nx] * 0.1f;
+    tmp_image[i*size] = image[i*size] * 0.6f;
+    tmp_image[i*size] += image[(i-1)*size] * 0.1f;
+    tmp_image[i*size] += image[(i+1)*size] * 0.1f;
+    tmp_image[i*size] += image[1+i*size] * 0.1f;
+    for (short j = 1; j < size-1; ++j) {
+      tmp_image[j+i*size] = image[j+i*size] * 0.6f;
+      tmp_image[j+i*size] += image[j  +(i-1)*size] * 0.1f;
+      tmp_image[j+i*size] += image[j  +(i+1)*size] * 0.1f;
+      tmp_image[j+i*size] += image[j-1+i*size] * 0.1f;
+      tmp_image[j+i*size] += image[j+1+i*size] * 0.1f;
     }
-    //when j=ny-1
-    tmp_image[(ny-1)+i*nx] = image[(ny-1)+i*nx] * 0.6f;
-    tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i-1)*nx] * 0.1f;
-    tmp_image[(ny-1)+i*nx] += image[(ny-1)  +(i+1)*nx] * 0.1f;
-    tmp_image[(ny-1)+i*nx] += image[(ny-1)-1+i*nx] * 0.1f;
+    //when j=size-1
+    tmp_image[(size-1)+i*size] = image[(size-1)+i*size] * 0.6f;
+    tmp_image[(size-1)+i*size] += image[(size-1)  +(i-1)*size] * 0.1f;
+    tmp_image[(size-1)+i*size] += image[(size-1)  +(i+1)*size] * 0.1f;
+    tmp_image[(size-1)+i*size] += image[(size-1)-1+i*size] * 0.1f;
   }
-  //when i = nx-1
+  //when i = size-1
   //when j=0
-  tmp_image[(nx-1)*nx] = image[(nx-1)*nx] * 0.6f;
-  tmp_image[(nx-1)*nx] += image[((nx-1)-1)*nx] * 0.1f;
-  tmp_image[(nx-1)*nx] += image[1+(nx-1)*nx] * 0.1f;
-  for (short j = 1; j < ny-1; ++j) {
-    tmp_image[j+(nx-1)*nx] = image[j+(nx-1)*nx] * 0.6f;
-    tmp_image[j+(nx-1)*nx] += image[j  +((nx-1)-1)*nx] * 0.1f;
-    tmp_image[j+(nx-1)*nx] += image[j-1+(nx-1)*nx] * 0.1f;
-    tmp_image[j+(nx-1)*nx] += image[j+1+(nx-1)*nx] * 0.1f;
+  tmp_image[(size-1)*size] = image[(size-1)*size] * 0.6f;
+  tmp_image[(size-1)*size] += image[((size-1)-1)*size] * 0.1f;
+  tmp_image[(size-1)*size] += image[1+(size-1)*size] * 0.1f;
+  for (short j = 1; j < size-1; ++j) {
+    tmp_image[j+(size-1)*size] = image[j+(size-1)*size] * 0.6f;
+    tmp_image[j+(size-1)*size] += image[j  +((size-1)-1)*size] * 0.1f;
+    tmp_image[j+(size-1)*size] += image[j-1+(size-1)*size] * 0.1f;
+    tmp_image[j+(size-1)*size] += image[j+1+(size-1)*size] * 0.1f;
   }
-  //when j=ny-1
-  tmp_image[(ny-1)+(nx-1)*nx] = image[(ny-1)+(nx-1)*nx] * 0.6f;
-  tmp_image[(ny-1)+(nx-1)*nx] += image[(ny-1)  +((nx-1)-1)*nx] * 0.1f;
-  tmp_image[(ny-1)+(nx-1)*nx] += image[(ny-1)-1+(nx-1)*nx] * 0.1f;
+  //when j=size-1
+  tmp_image[(size-1)+(size-1)*size] = image[(size-1)+(size-1)*size] * 0.6f;
+  tmp_image[(size-1)+(size-1)*size] += image[(size-1)  +((size-1)-1)*size] * 0.1f;
+  tmp_image[(size-1)+(size-1)*size] += image[(size-1)-1+(size-1)*size] * 0.1f;
 }
 
 // Create the input image
-void init_image(const short nx, const short ny, float * restrict image, float * restrict tmp_image) {
+void init_image(const short size, float * restrict image, float * restrict tmp_image) {
   // Zero everything
-  for (short j = 0; j < ny; ++j) {
-    for (short i = 0; i < nx; ++i) {
-      image[j+i*ny] = 0.0f;
-      tmp_image[j+i*ny] = 0.0f;
+  for (short j = 0; j < size; ++j) {
+    for (short i = 0; i < size; ++i) {
+      image[j+i*size] = 0.0f;
+      tmp_image[j+i*size] = 0.0f;
     }
   }
 
   // Checkerboard
   for (int j = 0; j < 8; ++j) {
     for (int i = 0; i < 8; ++i) {
-      for (int jj = j*ny/8; jj < (j+1)*ny/8; ++jj) {
-        for (int ii = i*nx/8; ii < (i+1)*nx/8; ++ii) {
+      for (int jj = j*size/8; jj < (j+1)*size/8; ++jj) {
+        for (int ii = i*size/8; ii < (i+1)*size/8; ++ii) {
           if ((i+j)%2)
-          image[jj+ii*ny] = 100.0f;
+          image[jj+ii*size] = 100.0f;
         }
       }
     }
@@ -127,7 +134,7 @@ void init_image(const short nx, const short ny, float * restrict image, float * 
 }
 
 // Routine to output the image in Netpbm grayscale binary image format
-void output_image(const char * file_name, const short nx, const short ny, float *image) {
+void output_image(const char * file_name, const short size, float *image) {
 
   // Open output file
   FILE *fp = fopen(file_name, "w");
@@ -137,23 +144,23 @@ void output_image(const char * file_name, const short nx, const short ny, float 
   }
 
   // Ouptut image header
-  fprintf(fp, "P5 %d %d 255\n", nx, ny);
+  fprintf(fp, "P5 %d %d 255\n", size, size);
 
   // Calculate maximum value of image
   // This is used to rescale the values
   // to a range of 0-255 for output
   float maximum = 0.0f;
-  for (short j = 0; j < ny; ++j) {
-    for (short i = 0; i < nx; ++i) {
-      if (image[j+i*ny] > maximum)
-        maximum = image[j+i*ny];
+  for (short j = 0; j < size; ++j) {
+    for (short i = 0; i < size; ++i) {
+      if (image[j+i*size] > maximum)
+        maximum = image[j+i*size];
     }
   }
 
   // Output image, converting to numbers 0-255
-  for (short j = 0; j < ny; ++j) {
-    for (short i = 0; i < nx; ++i) {
-      fputc((char)(255.0f*image[j+i*ny]/maximum), fp);
+  for (short j = 0; j < size; ++j) {
+    for (short i = 0; i < size; ++i) {
+      fputc((char)(255.0f*image[j+i*size]/maximum), fp);
     }
   }
 
