@@ -1,4 +1,4 @@
 stencil: stencil.c
-	gcc -std=c99 -Wall -Ofast $^ -pg -g -o $@
+	icc -std=c99 -Wall -O3 -ftree-vectorize -fopt-info-vec-missed $^ -pg -g -o $@
 
 
