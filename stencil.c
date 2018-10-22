@@ -62,7 +62,7 @@ void stencil(const short size, float * restrict image, float * restrict tmp_imag
   tmp_image[0] = image[0] * 0.6f;
   tmp_image[0] += image[size] * 0.1f;
   tmp_image[0] += image[0] * 0.1f;
-  for (short j = 1; j < size-1; ++j) {
+  for (int j = 1; j < size-1; ++j) {
     tmp_image[j] = image[j] * 0.6f;
     tmp_image[j] += image[j  +size] * 0.1f;
     tmp_image[j] += image[j-1] * 0.1f;
@@ -74,13 +74,13 @@ void stencil(const short size, float * restrict image, float * restrict tmp_imag
   tmp_image[size-1] += image[(size-1)-1] * 0.1f;
 
 
-  for (short i = 1; i < size-1; ++i) {
+  for (int i = 1; i < size-1; ++i) {
     //when j=0
     tmp_image[i*size] = image[i*size] * 0.6f;
     tmp_image[i*size] += image[(i-1)*size] * 0.1f;
     tmp_image[i*size] += image[(i+1)*size] * 0.1f;
     tmp_image[i*size] += image[1+i*size] * 0.1f;
-    for (short j = 1; j < size-1; ++j) {
+    for (int j = 1; j < size-1; ++j) {
       tmp_image[j+i*size] = image[j+i*size] * 0.6f;
       tmp_image[j+i*size] += image[j  +(i-1)*size] * 0.1f;
       tmp_image[j+i*size] += image[j  +(i+1)*size] * 0.1f;
@@ -98,7 +98,7 @@ void stencil(const short size, float * restrict image, float * restrict tmp_imag
   tmp_image[(size-1)*size] = image[(size-1)*size] * 0.6f;
   tmp_image[(size-1)*size] += image[((size-1)-1)*size] * 0.1f;
   tmp_image[(size-1)*size] += image[1+(size-1)*size] * 0.1f;
-  for (short j = 1; j < size-1; ++j) {
+  for (int j = 1; j < size-1; ++j) {
     tmp_image[j+(size-1)*size] = image[j+(size-1)*size] * 0.6f;
     tmp_image[j+(size-1)*size] += image[j  +((size-1)-1)*size] * 0.1f;
     tmp_image[j+(size-1)*size] += image[j-1+(size-1)*size] * 0.1f;
@@ -113,8 +113,8 @@ void stencil(const short size, float * restrict image, float * restrict tmp_imag
 // Create the input image
 void init_image(const short size, float * restrict image, float * restrict tmp_image) {
   // Zero everything
-  for (short j = 0; j < size; ++j) {
-    for (short i = 0; i < size; ++i) {
+  for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i) {
       image[j+i*size] = 0.0f;
       tmp_image[j+i*size] = 0.0f;
     }
@@ -150,16 +150,16 @@ void output_image(const char * file_name, const short size, float *image) {
   // This is used to rescale the values
   // to a range of 0-255 for output
   float maximum = 0.0f;
-  for (short j = 0; j < size; ++j) {
-    for (short i = 0; i < size; ++i) {
+  for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i) {
       if (image[j+i*size] > maximum)
         maximum = image[j+i*size];
     }
   }
 
   // Output image, converting to numbers 0-255
-  for (short j = 0; j < size; ++j) {
-    for (short i = 0; i < size; ++i) {
+  for (int j = 0; j < size; ++j) {
+    for (int i = 0; i < size; ++i) {
       fputc((char)(255.0f*image[j+i*size]/maximum), fp);
     }
   }
